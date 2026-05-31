@@ -1,600 +1,194 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hotel Telaga Biru - Katalog Kamar Mandiri</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Smart Catalog & Receptionist</title>
+    <link href="https://jsdelivr.net" rel="stylesheet">
     <style>
-      :root {
-        --teal-primary: #0d9488;
-        --teal-dark: #0f766e;
-        --teal-light: #f0fdfa;
-        --cyan-ocean: #0891b2;
-        --bg-soft: #f8fafc;
-      }
-
-      body {
-        font-family: 'Plus+Jakarta+Sans', sans-serif;
-        background-color: var(--bg-soft);
-        color: #334155;
-      }
-
-      .navbar-telaga {
-        background-color: white;
-        border-bottom: 2px solid var(--teal-primary);
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      }
-
-      .text-teal { color: var(--teal-primary); }
-      .bg-teal { background-color: var(--teal-primary); }
-      .btn-teal {
-        background-color: var(--teal-primary);
-        color: white;
-        border: none;
-      }
-      .btn-teal:hover {
-        background-color: var(--teal-dark);
-        color: white;
-      }
-
-      /* Card Room Styling */
-      .room-card {
-        transition: all 0.3s ease;
-        border: none;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-      }
-
-      .room-card:hover:not(.occupied) {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-      }
-
-      .room-card.occupied {
-        filter: grayscale(100%);
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .room-card.occupied .btn {
-        pointer-events: none;
-      }
-
-      .class-header {
-        border-left: 5px solid var(--cyan-ocean);
-        padding-left: 15px;
-        margin-bottom: 20px;
-        color: var(--teal-dark);
-        font-weight: 700;
-      }
-
-      .badge-status {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-
-      .dashboard-container {
-        display: none;
-      }
-
-      .guest-view {
-        display: block;
-      }
-
-      /* Custom Switch */
-      .form-check-input:checked {
-        background-color: var(--teal-primary);
-        border-color: var(--teal-primary);
-      }
-
-      /* Financial Card */
-      .finance-stat {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        border-top: 4px solid var(--teal-primary);
-      }
+        .kamar-pudar {
+            filter: grayscale(100%);
+            opacity: 0.4;
+            background-color: #e9ecef !important;
+        }
+        .bg-telaga {
+            background-color: #005f73 !important;
+        }
+        .text-telaga {
+            color: #005f73 !important;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body class="bg-light">
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-telaga sticky-top mb-4">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#" onclick="showGuestView()">
-          <span class="fs-4 fw-bold text-teal">Hotel Telaga Biru</span>
-        </a>
-        <div id="authButtons">
-          <button class="btn btn-outline-teal btn-sm fw-600" id="loginBtn" onclick="showLoginModal()">Login Resepsionis</button>
-          <button class="btn btn-danger btn-sm d-none" id="logoutBtn" onclick="handleLogout()">Logout</button>
+    <div class="container py-4">
+        <h1 class="text-center mb-4 text-telaga fw-bold">🏨 Katalog Kamar Mandiri - Hotel Telaga Biru</h1>
+        
+        <div class="row text-center mb-4">
+            <div class="col">
+                <button class="btn btn-primary w-100 bg-telaga border-0" onclick="gantiTab('tamu')">📱 Tampilan HP Tamu (Katalog Kamar)</button>
+            </div>
+            <div class="col">
+                <button class="btn btn-dark w-100" onclick="gantiTab('resepsionis')">💼 Dasbor Resepsionis</button>
+            </div>
         </div>
-      </div>
-    </nav>
 
-    <!-- GUEST VIEW SECTION -->
-    <div id="guestSection" class="container guest-view pb-5">
-      <div class="text-center mb-5 mt-4">
-        <h1 class="fw-bold">Katalog Kamar Mandiri</h1>
-        <p class="text-muted">Pilih kenyamanan Anda di Telaga Biru</p>
-      </div>
-      
-      <div id="roomCatalog">
-        <!-- Rooms will be generated here -->
-      </div>
-    </div>
-
-    <!-- LOGIN MODAL -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-          <div class="modal-body p-4">
-            <h4 class="text-center mb-4 fw-bold text-teal">Login Internal</h4>
-            <div class="mb-3">
-              <label class="form-label">Username</label>
-              <input type="text" id="usernameInput" class="form-control" placeholder="resepsionis">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Password</label>
-              <input type="password" id="passwordInput" class="form-control" placeholder="••••••••">
-            </div>
-            <button class="btn btn-teal w-full w-100 py-2 mt-2" onclick="handleLogin()">Masuk</button>
-          </div>
+        <!-- TAB TAMU -->
+        <div id="tab-tamu" class="mb-4">
+            <h3 class="mb-3 text-secondary">Silahkan Pilih Kamar Anda:</h3>
+            <div class="row" id="area-katalog-tamu"></div>
         </div>
-      </div>
-    </div>
 
-    <!-- RECEPTIONIST DASHBOARD SECTION -->
-    <div id="adminSection" class="container dashboard-container pb-5">
-      <div class="row">
-        <div class="col-12">
-          <h2 class="fw-bold mb-4">Dashboard Resepsionis</h2>
-          
-          <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active me-2" id="pills-rooms-tab" data-bs-toggle="pill" data-bs-target="#pills-rooms" type="button">Kontrol Status Kamar</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link me-2" id="pills-guests-tab" data-bs-toggle="pill" data-bs-target="#pills-guests" type="button">Buku Tamu</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="pills-finance-tab" data-bs-toggle="pill" data-bs-target="#pills-finance" type="button">Cash Flow</button>
-            </li>
-          </ul>
-
-          <div class="tab-content" id="pills-tabContent">
-            <!-- Room Control -->
-            <div class="tab-pane fade show active" id="pills-rooms">
-              <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body">
-                  <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                      <thead class="table-light">
-                        <tr>
-                          <th>No. Kamar</th>
-                          <th>Kelas</th>
-                          <th>Harga</th>
-                          <th>Status Saat Ini</th>
-                          <th>Aksi Kontrol</th>
-                        </tr>
-                      </thead>
-                      <tbody id="roomTableBody"></tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+        <!-- TAB RESEPSIONIS -->
+        <div id="tab-resepsionis" class="d-none">
+            <!-- LOGIN SECTION -->
+            <div id="area-login" class="card p-4 shadow-sm mx-auto mb-4" style="max-width: 400px;">
+                <h4 class="text-center mb-3 text-telaga">Masuk Resepsionis</h4>
+                <input type="text" id="user" class="form-control mb-2" placeholder="Username">
+                <input type="password" id="pass" class="form-control mb-3" placeholder="Password">
+                <button class="btn btn-primary w-100 bg-telaga border-0" onclick="prosesLogin()">Masuk</button>
             </div>
 
-            <!-- Guest Book -->
-            <div class="tab-pane fade" id="pills-guests">
-               <div class="row">
-                 <div class="col-md-4">
-                   <div class="card border-0 shadow-sm rounded-4 mb-4">
-                     <div class="card-body p-4">
-                       <h5 class="fw-bold mb-3">Registrasi Check-In</h5>
-                       <form id="checkInForm">
-                         <div class="mb-3">
-                           <label class="form-label">Nama Lengkap Tamu</label>
-                           <input type="text" id="guestName" class="form-control" required placeholder="Masukkan nama...">
-                         </div>
-                         <div class="mb-3">
-                           <label class="form-label">Nomor Kamar</label>
-                           <select id="guestRoom" class="form-select" required></select>
-                         </div>
-                         <button type="submit" class="btn btn-teal w-100">Simpan Check-In</button>
-                       </form>
-                     </div>
-                   </div>
-                 </div>
-                 <div class="col-md-8">
-                    <div class="card border-0 shadow-sm rounded-4">
-                      <div class="card-body">
-                        <h5 class="fw-bold mb-3">Riwayat Inap</h5>
-                        <div class="table-responsive">
-                          <table class="table table-hover">
-                            <thead>
-                              <tr>
-                                <th>Waktu</th>
-                                <th>Nama Tamu</th>
-                                <th>Kamar</th>
-                              </tr>
-                            </thead>
-                            <tbody id="historyBody"></tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                 </div>
-               </div>
-            </div>
-
-            <!-- Cash Flow -->
-            <div class="tab-pane fade" id="pills-finance">
-              <div class="row">
-                <div class="col-md-12 mb-4">
-                  <div class="finance-stat shadow-sm d-flex justify-content-between align-items-center">
-                    <div>
-                      <span class="text-muted small">Total Saldo Kasir (Tersedia)</span>
-                      <h2 class="fw-bold text-teal mb-0" id="totalBalance">Rp 0</h2>
-                    </div>
-                    <button class="btn btn-teal" onclick="document.getElementById('financeFormRow').classList.toggle('d-none')">
-                      Catat Transaksi Baru
-                    </button>
-                  </div>
+            <!-- KONTROL UTAMA -->
+            <div id="area-internal" class="d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-telaga fw-bold">⚙️ Dasbor Internal Kamar</h4>
+                    <button class="btn btn-sm btn-danger" onclick="prosesLogout()">Keluar/Logout</button>
                 </div>
                 
-                <div id="financeFormRow" class="col-md-12 d-none transition">
-                  <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-body p-4">
-                      <h5 class="fw-bold mb-3">Pencatatan Keuangan Tunai</h5>
-                      <form id="financeForm" class="row align-items-end g-3">
-                        <div class="col-md-3">
-                          <label class="form-label">Tipe</label>
-                          <select id="finType" class="form-select">
-                            <option value="in" class="text-success">Uang Masuk (+)</option>
-                            <option value="out" class="text-danger">Uang Keluar (-)</option>
-                          </select>
-                        </div>
-                        <div class="col-md-3">
-                          <label class="form-label">Keterangan</label>
-                          <input type="text" id="finDesc" class="form-control" placeholder="Contoh: Sewa Kamar E01" required>
-                        </div>
-                        <div class="col-md-4">
-                          <label class="form-label">Nominal (Rp)</label>
-                          <input type="number" id="finAmount" class="form-control" placeholder="100000" required>
-                        </div>
-                        <div class="col-md-2">
-                          <button type="submit" class="btn btn-teal w-100">Simpan</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
+                <div class="card p-3 shadow-sm mb-4">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>No. Kamar</th>
+                                <th>Kelas & Fasilitas</th>
+                                <th>Harga / Malam</th>
+                                <th>Status Saklar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-kontrol-kamar"></tbody>
+                    </table>
                 </div>
 
-                <div class="col-12">
-                  <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body">
-                      <div class="table-responsive">
-                        <table class="table table-hover">
-                          <thead>
-                            <tr>
-                              <th>Tanggal & Waktu</th>
-                              <th>Keterangan</th>
-                              <th>Tipe</th>
-                              <th class="text-end">Nominal</th>
-                            </tr>
-                          </thead>
-                          <tbody id="financeBody"></tbody>
-                        </table>
-                      </div>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card p-3 shadow-sm">
+                            <h4>📝 Buku Daftar Tamu</h4>
+                            <div class="mb-3">
+                                <input type="text" id="input-nama-tamu" class="form-control form-control-sm mb-2" placeholder="Nama Tamu">
+                                <input type="text" id="input-kamar-tamu" class="form-control form-control-sm mb-2" placeholder="No. Kamar">
+                                <button class="btn btn-sm btn-success" onclick="tambahBukuTamu()">Check-in Tamu</button>
+                            </div>
+                            <ul id="daftar-buku-tamu" class="list-group list-group-flush"></ul>
+                        </div>
                     </div>
-                  </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card p-3 shadow-sm bg-dark text-white">
+                            <h4>💰 Cash Flow Keuangan</h4>
+                            <h2 class="text-warning" id="total-saldo">Rp 0</h2>
+                            <hr class="bg-white">
+                            <div class="mb-2">
+                                <input type="text" id="ket-keuangan" class="form-control form-control-sm mb-2" placeholder="Keterangan Transaksi">
+                                <input type="number" id="nominal-keuangan" class="form-control form-control-sm mb-2" placeholder="Nominal Rp">
+                                <button class="btn btn-sm btn-warning" onclick="tambahTransaksi()">Catat Transaksi</button>
+                            </div>
+                            <ul id="riwayat-keuangan" class="list-group list-group-flush text-dark" style="max-height: 150px; overflow-y: auto;"></ul>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // INITIAL DATA STRUCTURE
-      const ROOM_CLASSES = [
-        { name: "Ekonomi", prefix: "E", price: 143000, facilities: "Fan, Kamar Mandi Luar" },
-        { name: "Standar", prefix: "S", price: 165000, facilities: "Fan, Kamar Mandi Dalam" },
-        { name: "VIP", prefix: "V", price: 233000, facilities: "Fan, TV, AC" },
-        { name: "Lantai 1 / Bawah", prefix: "B", price: 265000, facilities: "Akses Mudah, Fasilitas Utama" }
-      ];
+        let daftarKamar = [];
+        const kelasKamar = [
+            { kode: "E", nama: "Ekonomi", harga: 143000, fas: "Fan, Kamar Mandi Luar" },
+            { kode: "S", nama: "Standar", harga: 165000, fas: "Fan, Kamar Mandi Dalam" },
+            { kode: "V", nama: "VIP", harga: 233000, fas: "Fan, TV, AC" },
+            { kode: "B", nama: "Lantai Bawah", harga: 265000, fas: "Akses Mudah Lantai Bawah" }
+        ];
 
-      let rooms = [];
-      let guests = [];
-      let finances = [];
-      let isLoggedIn = false;
-
-      // INITIALIZATION
-      function initApp() {
-        // Load from LocalStorage or Create New
-        const savedRooms = localStorage.getItem('telaga_rooms');
-        const savedGuests = localStorage.getItem('telaga_guests');
-        const savedFinances = localStorage.getItem('telaga_finances');
-        const savedAuth = sessionStorage.getItem('telaga_auth');
-
-        if (savedRooms) {
-          rooms = JSON.parse(savedRooms);
-        } else {
-          // Generate 20 rooms (5 per class)
-          ROOM_CLASSES.forEach((cls) => {
-            for (let i = 1; i <= 5; i++) {
-              rooms.push({
-                id: `${cls.prefix}0${i}`,
-                class: cls.name,
-                price: cls.price,
-                facilities: cls.facilities,
-                isOccupied: false
-              });
+        kelasKamar.forEach(k => {
+            for(let i=1; i<=5; i++) {
+                daftarKamar.push({ no: k.kode + "0" + i, tipe: k.nama, harga: k.harga, fasilitas: k.fas, terisi: false });
             }
-          });
-          saveData();
+        });
+
+        let bukuTamu = [];
+        let cashFlow = [];
+
+        if (localStorage.getItem("tb_kamar")) daftarKamar = JSON.parse(localStorage.getItem("tb_kamar"));
+        if (localStorage.getItem("tb_tamu")) bukuTamu = JSON.parse(localStorage.getItem("tb_tamu"));
+        if (localStorage.getItem("tb_cash")) cashFlow = JSON.parse(localStorage.getItem("tb_cash"));
+
+        function renderKatalogTamu() {
+            let area = document.getElementById("area-katalog-tamu");
+            area.innerHTML = "";
+            daftarKamar.forEach(kamar => {
+                let pudar = kamar.terisi ? "kamar-pudar" : "";
+                let tombol = kamar.terisi ? "disabled" : "";
+                let teks = kamar.terisi ? "Sudah Terisi" : "Tersedia";
+                
+                area.innerHTML += `
+                    <div class="col-md-4 col-sm-6 mb-3">
+                        <div class="card shadow-sm ${pudar}">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold text-telaga">Kamar ${kamar.no}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Kelas: ${kamar.tipe}</h6>
+                                <p class="card-text small mb-1">💡 ${kamar.fasilitas}</p>
+                                <p class="card-text text-success fw-bold">Rp ${kamar.harga.toLocaleString('id-ID')} / malam</p>
+                                <span class="badge ${kamar.terisi ? 'bg-danger' : 'bg-success'} mb-3">${teks}</span>
+                                <br>
+                                <button class="btn btn-sm btn-outline-primary w-100" ${tombol} onclick="alert('Silahkan lakukan pembayaran CASH langsung ke meja Resepsionis untuk mengunci Kamar ${kamar.no}')">Pilih Kamar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        guests = savedGuests ? JSON.parse(savedGuests) : [];
-        finances = savedFinances ? JSON.parse(savedFinances) : [];
-        
-        if (savedAuth === 'true') {
-          isLoggedIn = true;
-          showDashboard();
-        } else {
-          showGuestView();
+        function renderDasborResepsionis() {
+            let tabel = document.getElementById("tabel-kontrol-kamar");
+            tabel.innerHTML = "";
+            daftarKamar.forEach((kamar, index) => {
+                tabel.innerHTML += `
+                    <tr>
+                        <td><b>Kamar ${kamar.no}</b></td>
+                        <td><span class="badge bg-secondary">${kamar.tipe}</span> <small class="text-muted">${kamar.fasilitas}</small></td>
+                        <td>Rp ${kamar.harga.toLocaleString('id-ID')}</td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" ${kamar.terisi ? 'checked' : ''} onchange="ubahStatusKamar(${index})">
+                                <label class="form-check-label">${kamar.terisi ? 'Terisi' : 'Kosong'}</label>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById("daftar-buku-tamu").innerHTML = bukuTamu.map(t => `<li class="list-group-item small">👤 ${t.nama} (Kamar ${t.kamar})</li>`).join("");
+            document.getElementById("riwayat-keuangan").innerHTML = cashFlow.map(c => `<li class="list-group-item small d-flex justify-content-between"><span>${c.ket}</span><b class="text-success">+ Rp ${c.nominal.toLocaleString('id-ID')}</b></li>`).join("");
+            let total = cashFlow.reduce((sum, item) => sum + Number(item.nominal), 0);
+            document.getElementById("total-saldo").innerText = "Rp " + total.toLocaleString('id-ID');
         }
 
-        renderAll();
-      }
-
-      function saveData() {
-        localStorage.setItem('telaga_rooms', JSON.stringify(rooms));
-        localStorage.setItem('telaga_guests', JSON.stringify(guests));
-        localStorage.setItem('telaga_finances', JSON.stringify(finances));
-      }
-
-      // AUTH LOGIC
-      function showLoginModal() {
-        const modal = new bootstrap.Modal(document.getElementById('loginModal'));
-        modal.show();
-      }
-
-      function handleLogin() {
-        const user = document.getElementById('usernameInput').value;
-        const pass = document.getElementById('passwordInput').value;
-
-        if (user === 'resepsionis' && pass === 'resepsionisadmin123') {
-          isLoggedIn = true;
-          sessionStorage.setItem('telaga_auth', 'true');
-          const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-          modal.hide();
-          showDashboard();
-        } else {
-          alert("Login Gagal! Cek Username & Password.");
+        function ubahStatusKamar(index) {
+            daftarKamar[index].terisi = !daftarKamar[index].terisi;
+            localStorage.setItem("tb_kamar", JSON.stringify(daftarKamar));
+            renderKatalogTamu();
+            renderDasborResepsionis();
         }
-      }
 
-      function handleLogout() {
-        isLoggedIn = false;
-        sessionStorage.removeItem('telaga_auth');
-        location.reload();
-      }
-
-      // NAVIGATION
-      function showGuestView() {
-        document.getElementById('guestSection').style.display = 'block';
-        document.getElementById('adminSection').style.display = 'none';
-        document.getElementById('loginBtn').classList.remove('d-none');
-        document.getElementById('logoutBtn').classList.add('d-none');
-        renderCatalog();
-      }
-
-      function showDashboard() {
-        if (!isLoggedIn) return showLoginModal();
-        document.getElementById('guestSection').style.display = 'none';
-        document.getElementById('adminSection').style.display = 'block';
-        document.getElementById('loginBtn').classList.add('d-none');
-        document.getElementById('logoutBtn').classList.remove('d-none');
-        renderDashboard();
-      }
-
-      // RENDERING FUNCTIONS
-      function renderAll() {
-        renderCatalog();
-        renderDashboard();
-      }
-
-      function renderCatalog() {
-        const catalogEl = document.getElementById('roomCatalog');
-        catalogEl.innerHTML = '';
-
-        ROOM_CLASSES.forEach(cls => {
-          const section = document.createElement('div');
-          section.className = 'mb-5';
-          section.innerHTML = `<h3 class="class-header">${cls.name}</h3><div class="row g-4" id="row-${cls.prefix}"></div>`;
-          catalogEl.appendChild(section);
-
-          const rowEl = document.getElementById(`row-${cls.prefix}`);
-          rooms.filter(r => r.class === cls.name).forEach(room => {
-            const col = document.createElement('div');
-            col.className = 'col-sm-6 col-md-4 col-lg-2-4'; // custom 5 items row
-            col.classList.add('col-lg-4'); // Fallback to 3 if not handled
-            
-            col.innerHTML = `
-              <div class="card room-card h-100 ${room.isOccupied ? 'occupied' : ''}">
-                <span class="badge-status bg-${room.isOccupied ? 'secondary' : 'teal'}">
-                  ${room.isOccupied ? 'TERISI' : 'TERSEDIA'}
-                </span>
-                <div class="card-body p-4 text-center mt-3">
-                  <h6 class="text-muted small mb-1">Kamar</h6>
-                  <h3 class="fw-bold text-teal mb-3">${room.id}</h3>
-                  <div class="mb-3 small">
-                    <div class="text-secondary">Fasilitas:</div>
-                    <div class="fw-semibold">${room.facilities}</div>
-                  </div>
-                  <div class="mb-4">
-                    <h5 class="fw-bold mb-0">Rp ${room.price.toLocaleString('id-ID')}</h5>
-                    <small class="text-muted">per malam</small>
-                  </div>
-                  <button class="btn btn-teal w-100 py-2 rounded-3 fw-bold" 
-                    ${room.isOccupied ? 'disabled' : ''} 
-                    onclick="selectRoom('${room.id}')">
-                    ${room.isOccupied ? 'Terisi' : 'Pilih Kamar'}
-                  </button>
-                </div>
-              </div>
-            `;
-            rowEl.appendChild(col);
-          });
-        });
-      }
-
-      function renderDashboard() {
-        // Room Control Table
-        const tableBody = document.getElementById('roomTableBody');
-        tableBody.innerHTML = '';
-        rooms.forEach(room => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><span class="fw-bold">${room.id}</span></td>
-            <td>${room.class}</td>
-            <td>Rp ${room.price.toLocaleString('id-ID')}</td>
-            <td>
-              <span class="badge bg-${room.isOccupied ? 'danger' : 'success'} p-2">
-                ${room.isOccupied ? 'Terisi' : 'Tersedia'}
-              </span>
-            </td>
-            <td>
-              <div class="form-check form-switch cursor-pointer">
-                <input class="form-check-input" type="checkbox" role="switch" 
-                  ${room.isOccupied ? 'checked' : ''} 
-                  onchange="toggleRoom('${room.id}')">
-              </div>
-            </td>
-          `;
-          tableBody.appendChild(tr);
-        });
-
-        // Guest Registration Setup
-        const select = document.getElementById('guestRoom');
-        select.innerHTML = '<option value="" disabled selected>Pilih Kamar...</option>';
-        rooms.filter(r => !r.isOccupied).forEach(r => {
-          const opt = document.createElement('option');
-          opt.value = r.id;
-          opt.innerText = `${r.id} - ${r.class}`;
-          select.appendChild(opt);
-        });
-
-        // Guest History
-        const histBody = document.getElementById('historyBody');
-        histBody.innerHTML = '';
-        guests.slice().reverse().forEach(g => {
-          histBody.innerHTML += `<tr><td><small class="text-muted">${g.date}</small></td><td class="fw-semibold">${g.name}</td><td><span class="badge bg-teal">${g.room}</span></td></tr>`;
-        });
-
-        // Finance Table & Balance
-        const finBody = document.getElementById('financeBody');
-        let total = 0;
-        finBody.innerHTML = '';
-        finances.slice().reverse().forEach(f => {
-          const isPlus = f.type === 'in';
-          if(isPlus) total += f.amount; else total -= f.amount;
-          finBody.innerHTML += `
-            <tr>
-              <td><small>${f.date}</small></td>
-              <td>${f.desc}</td>
-              <td><span class="badge ${isPlus ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}">${isPlus ? 'Masuk' : 'Keluar'}</span></td>
-              <td class="text-end fw-bold ${isPlus ? 'text-success' : 'text-danger'}">${isPlus ? '+' : '-'} Rp ${f.amount.toLocaleString('id-ID')}</td>
-            </tr>
-          `;
-        });
-        document.getElementById('totalBalance').innerText = `Rp ${total.toLocaleString('id-ID')}`;
-      }
-
-      // ACTIONS
-      function selectRoom(roomId) {
-        alert(`Silahkan lakukan pembayaran CASH langsung ke meja Resepsionis untuk mengunci Kamar [${roomId}]`);
-      }
-
-      function toggleRoom(roomId) {
-        const room = rooms.find(r => r.id === roomId);
-        if (room) {
-          room.isOccupied = !room.isOccupied;
-          saveData();
-          renderAll();
+        function prosesLogin() {
+            let u = document.getElementById("user").value;
+            let p = document.getElementById("pass").value;
+            if (u === "resepsionis" && p === "resepsionisadmin123") {
+                document.getElementById("area-login").classList.add("d-none");
+                document.getElementById("area-internal").classList.remove("d-none");
+                renderDasborResepsionis();
+            } else {
+                alert("Akun salah! Sinyal ditolak.");
+            }
         }
-      }
-
-      // FORMS
-      document.getElementById('checkInForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const name = document.getElementById('guestName').value;
-        const roomId = document.getElementById('guestRoom').value;
-        const room = rooms.find(r => r.id === roomId);
-
-        if (!name || !roomId) return;
-
-        // Mark room as occupied
-        room.isOccupied = true;
-        
-        // Add to history
-        guests.push({
-          name: name,
-          room: roomId,
-          date: new Date().toLocaleString('id-ID')
-        });
-
-        // Add to finance automatically
-        finances.push({
-          type: 'in',
-          desc: `Check-in ${name} [${roomId}]`,
-          amount: room.price,
-          date: new Date().toLocaleString('id-ID')
-        });
-
-        saveData();
-        renderAll();
-        this.reset();
-        alert(`Berhasil Check-in: ${name} di kamar ${roomId}`);
-      });
-
-      document.getElementById('financeForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const type = document.getElementById('finType').value;
-        const desc = document.getElementById('finDesc').value;
-        const amount = parseInt(document.getElementById('finAmount').value);
-
-        if (!desc || isNaN(amount)) return;
-
-        finances.push({
-          type: type,
-          desc: desc,
-          amount: amount,
-          date: new Date().toLocaleString('id-ID')
-        });
-
-        saveData();
-        renderAll();
-        this.reset();
-        document.getElementById('financeFormRow').classList.add('d-none');
-      });
-
-      window.onload = initApp;
-    </script>
-  </body>
-</html>
-
