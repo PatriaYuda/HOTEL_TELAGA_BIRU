@@ -1,0 +1,6 @@
+{
+  "name": "Hotel Telaga Biru",
+  "description": "A refined hotel room catalog and receptionist management system with a serene ocean blue aesthetic.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
