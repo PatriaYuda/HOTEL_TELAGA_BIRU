@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Smart Catalog & Receptionist</title>
+    <!-- Bootstrap CSS resmi dipastikan masuk ke server -->
     <link href="https://jsdelivr.net" rel="stylesheet">
     <style>
         .kamar-pudar {
@@ -17,81 +18,103 @@
         .text-telaga {
             color: #005f73 !important;
         }
+        .card-kamar {
+            transition: transform 0.2s;
+        }
+        .card-kamar:hover {
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body class="bg-light">
 
     <div class="container py-4">
-        <h1 class="text-center mb-4 text-telaga fw-bold">🏨 Katalog Kamar Mandiri - Hotel Telaga Biru</h1>
+        <!-- Header Hotel -->
+        <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-white shadow-sm border-top border-4 border-info">
+            <h1 class="text-center text-telaga fw-bold">🏨 Katalog Kamar Mandiri - Hotel Telaga Biru</h1>
+            <p class="text-center text-muted mb-0">Silahkan pilih kamar atau akses dasbor resepsionis melalui tombol di bawah</p>
+        </div>
         
-        <div class="row text-center mb-4">
-            <div class="col">
-                <button class="btn btn-primary w-100 bg-telaga border-0" onclick="gantiTab('tamu')">📱 Tampilan HP Tamu (Katalog Kamar)</button>
+        <!-- Navigasi Tab -->
+        <div class="row text-center mb-4 g-2">
+            <div class="col-6">
+                <button class="btn btn-primary w-100 bg-telaga border-0 fw-bold py-2 shadow-sm" onclick="gantiTab('tamu')">📱 Tampilan HP Tamu</button>
             </div>
-            <div class="col">
-                <button class="btn btn-dark w-100" onclick="gantiTab('resepsionis')">💼 Dasbor Resepsionis</button>
+            <div class="col-6">
+                <button class="btn btn-dark w-100 fw-bold py-2 shadow-sm" onclick="gantiTab('resepsionis')">💼 Dasbor Resepsionis</button>
             </div>
         </div>
 
-        <!-- TAB TAMU -->
+        <!-- ================= TAB HP TAMU ================= -->
         <div id="tab-tamu" class="mb-4">
-            <h3 class="mb-3 text-secondary">Silahkan Pilih Kamar Anda:</h3>
-            <div class="row" id="area-katalog-tamu"></div>
+            <div class="alert alert-info shadow-sm" role="alert">
+                ✨ <b>Scan QR Berhasil!</b> Silahkan telusuri daftar kamar yang tersedia di Hotel Telaga Biru.
+            </div>
+            <div class="row" id="area-katalog-tamu">
+                <!-- Diisi otomatis oleh JS -->
+            </div>
         </div>
 
-        <!-- TAB RESEPSIONIS -->
+        <!-- ================= TAB RESEPSIONIS ================= -->
         <div id="tab-resepsionis" class="d-none">
             <!-- LOGIN SECTION -->
-            <div id="area-login" class="card p-4 shadow-sm mx-auto mb-4" style="max-width: 400px;">
-                <h4 class="text-center mb-3 text-telaga">Masuk Resepsionis</h4>
-                <input type="text" id="user" class="form-control mb-2" placeholder="Username">
-                <input type="password" id="pass" class="form-control mb-3" placeholder="Password">
-                <button class="btn btn-primary w-100 bg-telaga border-0" onclick="prosesLogin()">Masuk</button>
+            <div id="area-login" class="card p-4 shadow mx-auto mb-4 bg-white" style="max-width: 400px; border-radius: 12px;">
+                <h4 class="text-center mb-3 text-telaga fw-bold">Masuk Sistem Kasir</h4>
+                <div class="mb-2">
+                    <label class="small fw-bold text-muted">Username</label>
+                    <input type="text" id="user" class="form-control" placeholder="Masukkan username">
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted">Password</label>
+                    <input type="password" id="pass" class="form-control" placeholder="Masukkan password">
+                </div>
+                <button class="btn btn-primary w-100 bg-telaga border-0 fw-bold py-2" onclick="prosesLogin()">Otorisasi Masuk</button>
             </div>
 
-            <!-- KONTROL UTAMA -->
+            <!-- KONTROL UTAMA INTERNAL -->
             <div id="area-internal" class="d-none">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="text-telaga fw-bold">⚙️ Dasbor Internal Kamar</h4>
-                    <button class="btn btn-sm btn-danger" onclick="prosesLogout()">Keluar/Logout</button>
+                <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
+                    <h4 class="text-telaga mb-0 fw-bold">⚙️ Kontrol Sistem Kamar</h4>
+                    <button class="btn btn-sm btn-danger fw-bold px-3" onclick="prosesLogout()">Logout / Keluar</button>
                 </div>
                 
-                <div class="card p-3 shadow-sm mb-4">
-                    <table class="table align-middle">
-                        <thead>
-                            <tr>
-                                <th>No. Kamar</th>
-                                <th>Kelas & Fasilitas</th>
-                                <th>Harga / Malam</th>
-                                <th>Status Saklar</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabel-kontrol-kamar"></tbody>
-                    </table>
+                <div class="card p-3 shadow-sm mb-4 bg-white">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>No. Kamar</th>
+                                    <th>Kelas & Spesifikasi</th>
+                                    <th>Harga Resmi</th>
+                                    <th>Saklar Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabel-kontrol-kamar"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-4">
-                        <div class="card p-3 shadow-sm">
-                            <h4>📝 Buku Daftar Tamu</h4>
-                            <div class="mb-3">
-                                <input type="text" id="input-nama-tamu" class="form-control form-control-sm mb-2" placeholder="Nama Tamu">
-                                <input type="text" id="input-kamar-tamu" class="form-control form-control-sm mb-2" placeholder="No. Kamar">
-                                <button class="btn btn-sm btn-success" onclick="tambahBukuTamu()">Check-in Tamu</button>
+                        <div class="card p-3 shadow-sm bg-white h-100">
+                            <h4 class="fw-bold text-secondary mb-3">📝 Buku Tamu (Check-In)</h4>
+                            <div class="mb-3 p-3 bg-light rounded">
+                                <input type="text" id="input-nama-tamu" class="form-control mb-2" placeholder="Nama Lengkap Tamu">
+                                <input type="text" id="input-kamar-tamu" class="form-control mb-2" placeholder="Nomor Kamar (Contoh: E01)">
+                                <button class="btn btn-sm btn-success w-100 fw-bold" onclick="tambahBukuTamu()">Daftarkan Tamu</button>
                             </div>
                             <ul id="daftar-buku-tamu" class="list-group list-group-flush"></ul>
                         </div>
                     </div>
 
                     <div class="col-md-6 mb-4">
-                        <div class="card p-3 shadow-sm bg-dark text-white">
-                            <h4>💰 Cash Flow Keuangan</h4>
-                            <h2 class="text-warning" id="total-saldo">Rp 0</h2>
-                            <hr class="bg-white">
-                            <div class="mb-2">
-                                <input type="text" id="ket-keuangan" class="form-control form-control-sm mb-2" placeholder="Keterangan Transaksi">
-                                <input type="number" id="nominal-keuangan" class="form-control form-control-sm mb-2" placeholder="Nominal Rp">
-                                <button class="btn btn-sm btn-warning" onclick="tambahTransaksi()">Catat Transaksi</button>
+                        <div class="card p-3 shadow-sm bg-dark text-white h-100">
+                            <h4 class="fw-bold text-warning mb-1">💰 Saldo Kasir Tunai</h4>
+                            <h2 class="text-warning fw-bold mb-3" id="total-saldo">Rp 0</h2>
+                            <div class="mb-3 p-3 rounded" style="background-color: rgba(255,255,255,0.1);">
+                                <input type="text" id="ket-keuangan" class="form-control mb-2" placeholder="Keterangan Pemasukan/Pengeluaran">
+                                <input type="number" id="nominal-keuangan" class="form-control mb-2" placeholder="Nominal Uang (Rp)">
+                                <button class="btn btn-sm btn-warning w-100 fw-bold text-dark" onclick="tambahTransaksi()">Catat Cash Flow</button>
                             </div>
                             <ul id="riwayat-keuangan" class="list-group list-group-flush text-dark" style="max-height: 150px; overflow-y: auto;"></ul>
                         </div>
@@ -101,6 +124,8 @@
         </div>
     </div>
 
+    <!-- Bootstrap JS Bundle via CDN -->
+    <script src="https://jsdelivr.net"></script>
     <script>
         let daftarKamar = [];
         const kelasKamar = [
@@ -112,7 +137,7 @@
 
         kelasKamar.forEach(k => {
             for(let i=1; i<=5; i++) {
-                daftarKamar.push({ no: k.kode + "0" + i, tipe: k.nama, harga: k.harga, fasilitas: k.fas, terisi: false });
+                daftarKamar.push({ no: k.kode + "0" + i, tipe: k.nama, harga: k.harga, fas: k.fas, terisi: false });
             }
         });
 
@@ -130,18 +155,18 @@
                 let pudar = kamar.terisi ? "kamar-pudar" : "";
                 let tombol = kamar.terisi ? "disabled" : "";
                 let teks = kamar.terisi ? "Sudah Terisi" : "Tersedia";
+                let warnaBadge = kamar.terisi ? "bg-danger" : "bg-success";
                 
                 area.innerHTML += `
                     <div class="col-md-4 col-sm-6 mb-3">
-                        <div class="card shadow-sm ${pudar}">
-                            <div class="card-body">
-                                <h5 class="card-title fw-bold text-telaga">Kamar ${kamar.no}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">Kelas: ${kamar.tipe}</h6>
-                                <p class="card-text small mb-1">💡 ${kamar.fasilitas}</p>
-                                <p class="card-text text-success fw-bold">Rp ${kamar.harga.toLocaleString('id-ID')} / malam</p>
-                                <span class="badge ${kamar.terisi ? 'bg-danger' : 'bg-success'} mb-3">${teks}</span>
-                                <br>
-                                <button class="btn btn-sm btn-outline-primary w-100" ${tombol} onclick="alert('Silahkan lakukan pembayaran CASH langsung ke meja Resepsionis untuk mengunci Kamar ${kamar.no}')">Pilih Kamar</button>
+                        <div class="card shadow-sm h-100 card-kamar ${pudar}">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title fw-bold text-telaga mb-1">Kamar ${kamar.no}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted small">Kelas: ${kamar.tipe}</h6>
+                                <p class="card-text small mb-2 text-secondary">⚙️ ${kamar.fas}</p>
+                                <p class="card-text text-success fw-bold mb-3 mt-auto">Rp ${kamar.harga.toLocaleString('id-ID')} / malam</p>
+                                <span class="badge ${warnaBadge} mb-3 align-self-start">${teks}</span>
+                                <button class="btn btn-sm btn-outline-primary w-100 mt-2" ${tombol} onclick="alert('Silahkan lakukan pembayaran CASH langsung ke meja Resepsionis untuk mengunci Kamar ${kamar.no}')">Pilih Kamar</button>
                             </div>
                         </div>
                     </div>
@@ -155,40 +180,8 @@
             daftarKamar.forEach((kamar, index) => {
                 tabel.innerHTML += `
                     <tr>
-                        <td><b>Kamar ${kamar.no}</b></td>
-                        <td><span class="badge bg-secondary">${kamar.tipe}</span> <small class="text-muted">${kamar.fasilitas}</small></td>
-                        <td>Rp ${kamar.harga.toLocaleString('id-ID')}</td>
+                        <td><b class="text-telaga">Kamar ${kamar.no}</b></td>
+                        <td><span class="badge bg-secondary">${kamar.tipe}</span> <br><small class="text-muted">${kamar.fas}</small></td>
+                        <td class="fw-bold text-success">Rp ${kamar.harga.toLocaleString('id-ID')}</td>
                         <td>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" ${kamar.terisi ? 'checked' : ''} onchange="ubahStatusKamar(${index})">
-                                <label class="form-check-label">${kamar.terisi ? 'Terisi' : 'Kosong'}</label>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            document.getElementById("daftar-buku-tamu").innerHTML = bukuTamu.map(t => `<li class="list-group-item small">👤 ${t.nama} (Kamar ${t.kamar})</li>`).join("");
-            document.getElementById("riwayat-keuangan").innerHTML = cashFlow.map(c => `<li class="list-group-item small d-flex justify-content-between"><span>${c.ket}</span><b class="text-success">+ Rp ${c.nominal.toLocaleString('id-ID')}</b></li>`).join("");
-            let total = cashFlow.reduce((sum, item) => sum + Number(item.nominal), 0);
-            document.getElementById("total-saldo").innerText = "Rp " + total.toLocaleString('id-ID');
-        }
-
-        function ubahStatusKamar(index) {
-            daftarKamar[index].terisi = !daftarKamar[index].terisi;
-            localStorage.setItem("tb_kamar", JSON.stringify(daftarKamar));
-            renderKatalogTamu();
-            renderDasborResepsionis();
-        }
-
-        function prosesLogin() {
-            let u = document.getElementById("user").value;
-            let p = document.getElementById("pass").value;
-            if (u === "resepsionis" && p === "resepsionisadmin123") {
-                document.getElementById("area-login").classList.add("d-none");
-                document.getElementById("area-internal").classList.remove("d-none");
-                renderDasborResepsionis();
-            } else {
-                alert("Akun salah! Sinyal ditolak.");
-            }
-        }
